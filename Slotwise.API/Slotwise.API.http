@@ -1,0 +1,6 @@
+@Slotwise.API_HostAddress = http://localhost:5017
+
+GET {{Slotwise.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
