@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Slotwise.Domain.Sessions.ValueObjects
 {
-    internal class EmailAdress
+    public struct EmailAdress
     {
     }
 }

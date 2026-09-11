@@ -6,7 +6,10 @@ using System.Threading.Tasks;
 
 namespace Slotwise.Domain.Base
 {
-    internal class AggregateRoot
+    public abstract class AggregateRoot : Entity
     {
+        public AggregateRoot()
+        {
+        }
     }
 }
