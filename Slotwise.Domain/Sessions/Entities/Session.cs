@@ -1,10 +1,5 @@
 ﻿using Slotwise.Domain.Base;
 using Slotwise.Domain.Sessions.ValueObjects;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Slotwise.Domain.Sessions.Entities
 {
@@ -19,11 +14,19 @@ namespace Slotwise.Domain.Sessions.Entities
 
         private Session() {  }
         
-        public Session(string title, TimeSlot timeSlot, SeatCount seatCount)
+        public Session(string title, TimeSlot timeSlot, SeatCount seatCount) : base(Guid.NewGuid())
         {
+            if (string.IsNullOrWhiteSpace(Title))
+                throw new ArgumentNullException("Title is required.", nameof(title));
+
             Title = title; 
             TimeSlot = timeSlot; 
             SeatCount = seatCount;
+        }
+
+        private int ConfirmedCount()
+        {
+            return bookings.Count(b => b.Status == BookingStatus.Confirmed);
         }
 
     }

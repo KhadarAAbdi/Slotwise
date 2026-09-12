@@ -4,12 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Slotwise.Domain.Sessions.Entities
+namespace Slotwise.Domain.Sessions.Interfaces
 {
-    public enum BookingStatus
+    public interface IDomainEvent
     {
-        Confirmed,
-        Waitlisted,
-        Cancelled
+        public DateTime OccuredOn { get; } 
     }
 }
