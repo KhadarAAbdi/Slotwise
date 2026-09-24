@@ -12,4 +12,8 @@
     <Folder Include="Persistence\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Slotwise.Domain\Slotwise.Domain.csproj" />
+  </ItemGroup>
+
 </Project>
