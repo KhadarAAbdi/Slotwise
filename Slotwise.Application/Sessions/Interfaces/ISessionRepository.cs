@@ -2,7 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Slotwise.Domain.Sessions.Entities;
 
-namespace Slotwise.Domain.Sessions.Interfaces
+namespace Slotwise.Application.Sessions.Interfaces
 {
     /// <summary>
     /// Persistence contract for the <see cref="Session"/> aggregate. Implemented by the
