@@ -1,5 +1,6 @@
 using Slotwise.Application.Abstractions;
 using Slotwise.Application.Sessions.DTOs;
+using Slotwise.Application.Sessions.Exceptions;
 using Slotwise.Application.Sessions.Interfaces;
 using Slotwise.Domain.Sessions.ValueObjects;
 

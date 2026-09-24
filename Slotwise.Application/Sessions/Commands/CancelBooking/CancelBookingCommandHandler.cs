@@ -1,4 +1,5 @@
 using Slotwise.Application.Abstractions;
+using Slotwise.Application.Sessions.Exceptions;
 using Slotwise.Application.Sessions.Interfaces;
 using Slotwise.Domain.Sessions.Events;
 using Slotwise.Domain.Sessions.Services;

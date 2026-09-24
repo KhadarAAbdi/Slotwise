@@ -1,4 +1,4 @@
-namespace Slotwise.Application.Sessions
+namespace Slotwise.Application.Sessions.Exceptions
 {
     public sealed class SessionNotFoundException : Exception
     {
