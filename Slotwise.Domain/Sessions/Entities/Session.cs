@@ -61,6 +61,9 @@ namespace Slotwise.Domain.Sessions.Entities
         /// </summary>
         public Booking Book(EmailAddress email)
         {
+            if (bookings.Any(b => b.Status != BookingStatus.Cancelled && b.EmailAddress.Equals(email)))
+                throw new InvalidOperationException("This email already has a booking for this session.");
+
             var status = HasAvailableCapacity() ? BookingStatus.Confirmed : BookingStatus.Waitlisted;
             var booking = new Booking(Id, email, status);
             bookings.Add(booking);
