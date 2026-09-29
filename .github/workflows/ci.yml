@@ -24,5 +24,11 @@ jobs:
       - name: Test
         run: |
           for proj in $(find . -name "*.Tests.csproj"); do
-            dotnet test "$proj" --configuration Release --no-build
+            dotnet test "$proj" --configuration Release --no-build --collect:"XPlat Code Coverage"
           done
+
+      - name: Upload coverage reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-reports
+          path: "**/TestResults/**/coverage.cobertura.xml"

@@ -129,6 +129,99 @@ public class SessionTests
     }
 
     [Fact]
+    public void Constructor_ValidArguments_SetsProperties()
+    {
+        var start = DateTime.UtcNow.AddDays(1);
+        var slot = new TimeSlot(start, start.AddHours(1));
+        var seats = new SeatCount(3);
+
+        var session = new Session("Yoga", slot, seats);
+
+        Assert.NotEqual(Guid.Empty, session.Id);
+        Assert.Equal("Yoga", session.Title);
+        Assert.Equal(slot, session.TimeSlot);
+        Assert.Equal(seats, session.SeatCount);
+        Assert.Empty(session.Bookings);
+    }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("   ")]
+    public void Constructor_BlankTitle_Throws(string? title)
+    {
+        var start = DateTime.UtcNow.AddDays(1);
+
+        Assert.Throws<ArgumentException>(() => new Session(title!, new TimeSlot(start, start.AddHours(1)), new SeatCount(1)));
+    }
+
+    [Fact]
+    public void Constructor_NullTimeSlot_Throws()
+    {
+        Assert.Throws<ArgumentNullException>(() => new Session("Yoga", null!, new SeatCount(1)));
+    }
+
+    [Fact]
+    public void Constructor_NullSeatCount_Throws()
+    {
+        var start = DateTime.UtcNow.AddDays(1);
+
+        Assert.Throws<ArgumentNullException>(() => new Session("Yoga", new TimeSlot(start, start.AddHours(1)), null!));
+    }
+
+    [Fact]
+    public void Book_CreatesBookingWithSessionIdEmailAndTimestamp()
+    {
+        var session = CreateSession();
+
+        var booking = session.Book(new EmailAddress("Sam@Example.com"));
+
+        Assert.Equal(session.Id, booking.SessionId);
+        Assert.Equal("sam@example.com", booking.EmailAddress.Value);
+        Assert.InRange(booking.CreatedAt, DateTime.UtcNow.AddMinutes(-1), DateTime.UtcNow.AddMinutes(1));
+        Assert.Contains(booking, session.Bookings);
+    }
+
+    [Fact]
+    public void CancelBooking_AlreadyCancelled_Throws()
+    {
+        var session = CreateSession();
+        var booking = session.Book(new EmailAddress("a@example.com"));
+        session.CancelBooking(booking.Id);
+
+        Assert.Throws<InvalidOperationException>(() => session.CancelBooking(booking.Id));
+    }
+
+    [Fact]
+    public void PromoteFromWaitlist_UnknownBooking_Throws()
+    {
+        var session = CreateSession();
+
+        Assert.Throws<InvalidOperationException>(() => session.PromoteFromWaitlist(Guid.NewGuid()));
+    }
+
+    [Fact]
+    public void PromoteFromWaitlist_BookingAlreadyConfirmed_Throws()
+    {
+        var session = CreateSession(capacity: 2);
+        var confirmed = session.Book(new EmailAddress("a@example.com"));
+
+        Assert.Throws<InvalidOperationException>(() => session.PromoteFromWaitlist(confirmed.Id));
+    }
+
+    [Fact]
+    public void ClearDomainEvents_RemovesAllRaisedEvents()
+    {
+        var session = CreateSession();
+        session.Book(new EmailAddress("a@example.com"));
+        Assert.NotEmpty(session.DomainEvents);
+
+        session.ClearDomainEvents();
+
+        Assert.Empty(session.DomainEvents);
+    }
+
+    [Fact]
     public void Book_SameEmailDifferentCase_Throws()
     {
         var session = CreateSession();
