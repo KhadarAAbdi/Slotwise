@@ -1,0 +1,34 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Build
+        run: |
+          for proj in $(find . -name "*.csproj"); do
+            dotnet build "$proj" --configuration Release
+          done
+
+      - name: Test
+        run: |
+          for proj in $(find . -name "*.Tests.csproj"); do
+            dotnet test "$proj" --configuration Release --no-build --collect:"XPlat Code Coverage"
+          done
+
+      - name: Upload coverage reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-reports
+          path: "**/TestResults/**/coverage.cobertura.xml"
