@@ -1,14 +1,11 @@
-using Microsoft.EntityFrameworkCore;
-using Slotwise.Infrastructure.Persistence;
+using Slotwise.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
 builder.Services.AddControllers();
-builder.Services.AddDbContext<SlotwiseDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("SlotwiseDb")));
-
+builder.Services.AddInfrastructure(builder.Configuration);
 
 var app = builder.Build();
 

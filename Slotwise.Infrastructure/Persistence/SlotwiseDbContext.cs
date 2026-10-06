@@ -15,5 +15,10 @@ namespace Slotwise.Infrastructure.Persistence
         {
 
         }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(SlotwiseDbContext).Assembly);
+        }
     }
 }
