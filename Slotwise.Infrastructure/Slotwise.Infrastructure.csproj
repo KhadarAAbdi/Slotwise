@@ -8,15 +8,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Services\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.12" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.12" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Slotwise.Application\Slotwise.Application.csproj" />
     <ProjectReference Include="..\Slotwise.Domain\Slotwise.Domain.csproj" />
   </ItemGroup>
 

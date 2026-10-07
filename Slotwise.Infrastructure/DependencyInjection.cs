@@ -1,7 +1,10 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Slotwise.Application.Sessions.Interfaces;
 using Slotwise.Infrastructure.Persistence;
+using Slotwise.Infrastructure.Persistence.Queries;
+using Slotwise.Infrastructure.Persistence.Repositories;
 
 namespace Slotwise.Infrastructure
 {
@@ -17,7 +20,8 @@ namespace Slotwise.Infrastructure
                     "Set ConnectionStrings:SlotwiseDb in appsettings.json or the ConnectionStrings__SlotwiseDb environment variable.");
 
             services.AddDbContext<SlotwiseDbContext>(options => options.UseSqlServer(connectionString));
-
+            services.AddScoped<ISessionRepository, SessionRepository>();
+            services.AddScoped<ISessionQueries, SessionQueries>();
             return services;
         }
     }

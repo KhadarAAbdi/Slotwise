@@ -20,7 +20,7 @@ namespace Slotwise.Application.Sessions.Commands.CreateSession
             SeatCount seatCount = new SeatCount(command.Capacity);
             Session session = new Session(command.Title, sessionTimeslot, seatCount);
 
-            await _repository.AddAsync(session);
+            _repository.Add(session);
             await _repository.SaveChangesAsync();
 
             return session.Id;
