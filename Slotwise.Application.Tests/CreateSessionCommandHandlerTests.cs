@@ -21,9 +21,8 @@ public class CreateSessionCommandHandlerTests
     public async Task Handle_ValidCommand_PersistsSessionAndReturnsItsId()
     {
         Session? added = null;
-        _repository.Setup(r => r.AddAsync(It.IsAny<Session>()))
-            .Callback<Session>(s => added = s)
-            .Returns(Task.CompletedTask);
+        _repository.Setup(r => r.Add(It.IsAny<Session>()))
+            .Callback<Session>(s => added = s);
 
         var id = await _handler.Handle(new CreateSessionCommand("Yoga", Start, Start.AddHours(1), 10));
 
@@ -33,7 +32,7 @@ public class CreateSessionCommandHandlerTests
         Assert.Equal(10, added.SeatCount.Value);
         Assert.Equal(Start, added.TimeSlot.Start);
         Assert.Equal(Start.AddHours(1), added.TimeSlot.End);
-        _repository.Verify(r => r.AddAsync(added), Times.Once);
+        _repository.Verify(r => r.Add(added), Times.Once);
         _repository.Verify(r => r.SaveChangesAsync(), Times.Once);
     }
 
@@ -43,7 +42,7 @@ public class CreateSessionCommandHandlerTests
         await Assert.ThrowsAsync<ArgumentOutOfRangeException>(
             () => _handler.Handle(new CreateSessionCommand("Yoga", Start, Start.AddHours(1), 0)));
 
-        _repository.Verify(r => r.AddAsync(It.IsAny<Session>()), Times.Never);
+        _repository.Verify(r => r.Add(It.IsAny<Session>()), Times.Never);
         _repository.Verify(r => r.SaveChangesAsync(), Times.Never);
     }
 

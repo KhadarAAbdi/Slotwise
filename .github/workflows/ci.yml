@@ -8,12 +8,25 @@ on:
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
+
+    env:
+      SLOTWISE_TEST_SQLSERVER: "Server=localhost,1433;User Id=sa;Password=Slotwise_Test_1;TrustServerCertificate=True;"
+
+    services:
+      sqlserver:
+        image: mcr.microsoft.com/mssql/server:2022-latest
+        env:
+          ACCEPT_EULA: "Y"
+          MSSQL_SA_PASSWORD: "Slotwise_Test_1"
+        ports:
+          - 1433:1433
+
     steps:
       - uses: actions/checkout@v4
 
       - uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: 8.0.x
+          dotnet-version: 10.0.x
 
       - name: Build
         run: |

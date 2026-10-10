@@ -15,7 +15,7 @@ namespace Slotwise.Application.Sessions.Interfaces
         Task<Session?> GetByIdAsync(Guid id);
 
         /// <summary>Registers a new session to be persisted. Needed so a use-case can hand off a freshly created aggregate without knowing how storage works.</summary>
-        Task AddAsync(Session session);
+        void Add(Session session);
 
         /// <summary>Persists any pending changes to the underlying store. Kept separate from Add/Get so multiple changes can be batched into one save (unit-of-work style), matching how EF Core tracks changes.</summary>
         Task SaveChangesAsync();
