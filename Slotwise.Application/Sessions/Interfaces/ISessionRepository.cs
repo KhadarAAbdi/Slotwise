@@ -17,7 +17,10 @@ namespace Slotwise.Application.Sessions.Interfaces
         /// <summary>Registers a new session to be persisted. Needed so a use-case can hand off a freshly created aggregate without knowing how storage works.</summary>
         void Add(Session session);
 
-        /// <summary>Persists any pending changes to the underlying store. Kept separate from Add/Get so multiple changes can be batched into one save (unit-of-work style), matching how EF Core tracks changes.</summary>
+        /// <summary>
+        /// Persists any pending changes to the underlying store. Kept separate from Add/Get so multiple changes can be batched into one save (unit-of-work style), matching how EF Core tracks changes.
+        /// Throws <see cref="Exceptions.SessionConcurrencyException"/> if another request changed the same session since it was loaded.
+        /// </summary>
         Task SaveChangesAsync();
     }
 }

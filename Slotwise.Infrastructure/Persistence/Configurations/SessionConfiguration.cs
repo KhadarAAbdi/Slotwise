@@ -39,6 +39,8 @@ namespace Slotwise.Infrastructure.Persistence.Configurations
                 .HasField("bookings")
                 .UsePropertyAccessMode(PropertyAccessMode.Field);
 
+            builder.Property<int>("Version").IsConcurrencyToken();
+
             builder.Ignore(s => s.DomainEvents);
         }
     }
