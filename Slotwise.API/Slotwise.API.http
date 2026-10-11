@@ -1,6 +1,31 @@
 @Slotwise.API_HostAddress = http://localhost:5017
 
-GET {{Slotwise.API_HostAddress}}/weatherforecast/
+### List sessions
+GET {{Slotwise.API_HostAddress}}/sessions
 Accept: application/json
 
-###
+### Create a session (copy the returned id into the requests below)
+POST {{Slotwise.API_HostAddress}}/sessions
+Content-Type: application/json
+
+{
+  "title": "Yoga",
+  "start": "2030-01-01T10:00:00Z",
+  "end": "2030-01-01T11:00:00Z",
+  "capacity": 2
+}
+
+### Get one session
+GET {{Slotwise.API_HostAddress}}/sessions/00000000-0000-0000-0000-000000000000
+Accept: application/json
+
+### Book a seat
+POST {{Slotwise.API_HostAddress}}/sessions/00000000-0000-0000-0000-000000000000/bookings
+Content-Type: application/json
+
+{
+  "email": "sam@example.com"
+}
+
+### Cancel a booking
+DELETE {{Slotwise.API_HostAddress}}/sessions/00000000-0000-0000-0000-000000000000/bookings/00000000-0000-0000-0000-000000000000
