@@ -11,8 +11,14 @@ jobs:
 
     env:
       SLOTWISE_TEST_SQLSERVER: "Server=localhost,1433;User Id=sa;Password=Slotwise_Test_1;TrustServerCertificate=True;"
+      SLOTWISE_TEST_MONGO: "mongodb://localhost:27017"
 
     services:
+      mongo:
+        image: mongo:7
+        ports:
+          - 27017:27017
+
       sqlserver:
         image: mcr.microsoft.com/mssql/server:2022-latest
         env:
