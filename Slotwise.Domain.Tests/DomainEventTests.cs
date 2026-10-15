@@ -18,6 +18,17 @@ public class DomainEventTests
     }
 
     [Fact]
+    public void SessionCreated_IsRaisedOnCreation_AndCarriesSession()
+    {
+        var session = CreateSession();
+
+        var evt = Assert.Single(session.DomainEvents.OfType<SessionCreated>());
+
+        Assert.Equal(session.Id, evt.SessionId);
+        AssertRecent(evt.OccurredOn);
+    }
+
+    [Fact]
     public void BookingConfirmed_CarriesSessionBookingAndEmail()
     {
         var session = CreateSession();
@@ -82,11 +93,13 @@ public class DomainEventTests
         var sessionId = Guid.NewGuid();
         var bookingId = Guid.NewGuid();
 
+        var created = new SessionCreated(sessionId);
         var spotOpened = new SpotOpened(sessionId);
         var confirmed = new BookingConfirmed(sessionId, bookingId, "a@example.com");
         var cancelled = new BookingCancelled(sessionId, bookingId, "a@example.com");
         var promoted = new WaitlistPromoted(sessionId, bookingId, "a@example.com");
 
+        AssertValueSemantics(created, created with { }, sessionId);
         AssertValueSemantics(spotOpened, spotOpened with { }, sessionId);
         AssertValueSemantics(confirmed, confirmed with { }, bookingId);
         AssertValueSemantics(cancelled, cancelled with { }, bookingId);

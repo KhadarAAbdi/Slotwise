@@ -2,7 +2,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using MongoDB.Driver;
+using Slotwise.Application.Abstractions;
 using Slotwise.Application.Sessions.Interfaces;
+using Slotwise.Infrastructure.Events;
 using Slotwise.Infrastructure.Persistence;
 using Slotwise.Infrastructure.Persistence.Queries;
 using Slotwise.Infrastructure.Persistence.Repositories;
@@ -26,6 +28,7 @@ namespace Slotwise.Infrastructure
 
             services.AddDbContext<SlotwiseDbContext>(options => options.UseSqlServer(connectionString));
             services.AddSingleton<IMongoClient>(_ => new MongoClient(mongoConnectionString));
+            services.AddScoped<IDomainEventDispatcher, DomainEventDispatcher>();
             services.AddScoped<ISessionRepository, SessionRepository>();
             services.AddScoped<ISessionQueries, SessionQueries>();
             return services;

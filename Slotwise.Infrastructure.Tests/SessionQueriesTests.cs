@@ -21,7 +21,7 @@ public class SessionQueriesTests(SqlServerFixture db)
 
         try
         {
-            var repository = new SessionRepository(context);
+            var repository = new SessionRepository(context, new RecordingDomainEventDispatcher());
             repository.Add(session);
             await repository.SaveChangesAsync();
         }

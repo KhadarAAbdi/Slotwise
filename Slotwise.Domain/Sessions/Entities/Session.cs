@@ -46,6 +46,8 @@ namespace Slotwise.Domain.Sessions.Entities
             Title = title;
             TimeSlot = timeSlot ?? throw new ArgumentNullException(nameof(timeSlot));
             SeatCount = seatCount ?? throw new ArgumentNullException(nameof(seatCount));
+
+            RaiseEvent(new SessionCreated(Id));
         }
 
         /// <summary>Counts how many bookings currently hold a confirmed seat. Kept private since it's just an internal building block for the capacity check, not something callers need directly.</summary>

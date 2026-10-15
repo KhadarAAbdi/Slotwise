@@ -20,7 +20,7 @@ public class SessionPersistenceTests(SqlServerFixture db)
 
         try
         {
-            var repository = new SessionRepository(context);
+            var repository = new SessionRepository(context, new RecordingDomainEventDispatcher());
             repository.Add(session);
             await repository.SaveChangesAsync();
         }
@@ -39,7 +39,7 @@ public class SessionPersistenceTests(SqlServerFixture db)
 
         try
         {
-            return await new SessionRepository(context).GetByIdAsync(id);
+            return await new SessionRepository(context, new RecordingDomainEventDispatcher()).GetByIdAsync(id);
         }
         finally
         {
@@ -94,7 +94,7 @@ public class SessionPersistenceTests(SqlServerFixture db)
 
         try
         {
-            var repository = new SessionRepository(context);
+            var repository = new SessionRepository(context, new RecordingDomainEventDispatcher());
             var loaded = await repository.GetByIdAsync(session.Id);
             loaded!.Book(new EmailAddress("b@example.com"));
             await repository.SaveChangesAsync();
@@ -123,7 +123,7 @@ public class SessionPersistenceTests(SqlServerFixture db)
 
         try
         {
-            var repository = new SessionRepository(context);
+            var repository = new SessionRepository(context, new RecordingDomainEventDispatcher());
             var loaded = await repository.GetByIdAsync(session.Id);
             loaded!.CancelBooking(booking.Id);
             await repository.SaveChangesAsync();
