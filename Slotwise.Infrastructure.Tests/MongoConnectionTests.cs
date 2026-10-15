@@ -15,19 +15,21 @@ public class MongoConnectionTests
     private const string ServerVariable = "SLOTWISE_TEST_MONGO";
     private const string DefaultServer = "mongodb://localhost:27017";
 
-    private static IConfiguration BuildConfiguration(params (string Key, string Value)[] settings)
+    private static IConfiguration BuildConfiguration(Dictionary<string,string?> settings)
     {
-        var values = settings.ToDictionary(s => s.Key, s => (string?)s.Value);
-        return new ConfigurationBuilder().AddInMemoryCollection(values).Build();
+        return new ConfigurationBuilder().AddInMemoryCollection(settings).Build();
     }
 
     [Fact]
     public async Task RegisteredClient_CanWriteAndReadBackADocument()
     {
+        Dictionary<string,string?> settings = new()
+        {
+            { "ConnectionStrings:SlotwiseDb", "Server=unused" },
+            { "ConnectionStrings:MongoDb", Environment.GetEnvironmentVariable(ServerVariable) ?? DefaultServer }
+        };
         var server = Environment.GetEnvironmentVariable(ServerVariable) ?? DefaultServer;
-        var configuration = BuildConfiguration(
-            ("ConnectionStrings:SlotwiseDb", "Server=unused"),
-            ("ConnectionStrings:MongoDb", server));
+        var configuration = BuildConfiguration(settings);
 
         var provider = new ServiceCollection().AddInfrastructure(configuration).BuildServiceProvider();
         var client = provider.GetRequiredService<IMongoClient>();
@@ -54,7 +56,12 @@ public class MongoConnectionTests
     [Fact]
     public void AddInfrastructure_WithoutMongoConnectionString_FailsFast()
     {
-        var configuration = BuildConfiguration(("ConnectionStrings:SlotwiseDb", "Server=unused"));
+        Dictionary<string, string?> settings = new()
+        {
+            { "ConnectionStrings:SlotwiseDb", "Server=unused" },
+        };
+
+        var configuration = BuildConfiguration(settings);
 
         var exception = Assert.Throws<InvalidOperationException>(
             () => new ServiceCollection().AddInfrastructure(configuration));
