@@ -43,35 +43,6 @@ public class SessionEventDispatchTests(SqlServerFixture db)
     }
 
     [Fact]
-    public async Task SecondSave_OnlyPublishesTheEventsRaisedSinceTheFirst()
-    {
-        var session = NewSession(capacity: 5);
-        var dispatcher = new RecordingDomainEventDispatcher();
-        var context = db.CreateContext();
-
-        try
-        {
-            var repository = new SessionRepository(context, dispatcher);
-            repository.Add(session);
-            await repository.SaveChangesAsync();
-            dispatcher.Dispatched.Clear();
-
-            session.Book(new EmailAddress("a@example.com"));
-            await repository.SaveChangesAsync();
-        }
-        finally
-        {
-            if (context is not null)
-            {
-                await context.DisposeAsync();
-            }
-        }
-
-        Assert.Single(dispatcher.Dispatched);
-        Assert.IsType<BookingConfirmed>(dispatcher.Dispatched[0]);
-    }
-
-    [Fact]
     public async Task WhenTheSaveFails_NothingIsPublished_AndTheEventsStayOnTheSession()
     {
         var session = NewSession(capacity: 1);

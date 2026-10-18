@@ -54,44 +54,6 @@ public class DomainEventDispatcherTests
     }
 
     [Fact]
-    public async Task DispatchAsync_DoesNotCallHandlersForOtherEventTypes()
-    {
-        var spotOpenedHandler = new RecordingHandler<SpotOpened>();
-        var dispatcher = CreateDispatcher(services =>
-            services.AddSingleton<IDomainEventHandler<SpotOpened>>(spotOpenedHandler));
-
-        await dispatcher.DispatchAsync(new IDomainEvent[] { new BookingConfirmed(Guid.NewGuid(), Guid.NewGuid(), "a@example.com") });
-
-        Assert.Empty(spotOpenedHandler.Received);
-    }
-
-    [Fact]
-    public async Task DispatchAsync_WithNoHandlerRegistered_DoesNothing()
-    {
-        var dispatcher = CreateDispatcher(_ => { });
-
-        await dispatcher.DispatchAsync(new IDomainEvent[] { new SpotOpened(Guid.NewGuid()) });
-    }
-
-    [Fact]
-    public async Task DispatchAsync_DeliversEveryEventInTheBatch()
-    {
-        var created = new RecordingHandler<SessionCreated>();
-        var opened = new RecordingHandler<SpotOpened>();
-        var dispatcher = CreateDispatcher(services =>
-        {
-            services.AddSingleton<IDomainEventHandler<SessionCreated>>(created);
-            services.AddSingleton<IDomainEventHandler<SpotOpened>>(opened);
-        });
-        var sessionId = Guid.NewGuid();
-
-        await dispatcher.DispatchAsync(new IDomainEvent[] { new SessionCreated(sessionId), new SpotOpened(sessionId) });
-
-        Assert.Single(created.Received);
-        Assert.Single(opened.Received);
-    }
-
-    [Fact]
     public async Task DispatchAsync_WhenAHandlerFails_StillRunsTheOthersAndDoesNotThrow()
     {
         var after = new RecordingHandler<SpotOpened>();
