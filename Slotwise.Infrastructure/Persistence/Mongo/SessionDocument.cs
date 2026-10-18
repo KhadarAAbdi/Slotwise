@@ -13,6 +13,9 @@ namespace Slotwise.Infrastructure.Persistence.Mongo
     /// </summary>
     public sealed class SessionDocument
     {
+        /// <summary>The one place the collection name is written, shared by the queries and the projection so a typo can't create a second collection.</summary>
+        public const string CollectionName = "sessions";
+
         /// <summary>
         /// The session's id, stored as a standard UUID (BSON binary subtype 4). The representation is pinned explicitly
         /// because the legacy ones are not portable between drivers, and changing it later would orphan stored data.

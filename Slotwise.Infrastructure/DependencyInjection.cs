@@ -25,9 +25,13 @@ namespace Slotwise.Infrastructure
                 ?? throw new InvalidOperationException(
                     $"Connection string 'MongoDb' is not configured. " +
                     "Set ConnectionStrings:MongoDb in appsettings.json or the ConnectionStrings__MongoDb environment variable.");
+            var mongoDatabaseName = MongoUrl.Create(mongoConnectionString).DatabaseName
+                ?? throw new InvalidOperationException(
+                    "Connection string 'MongoDb' must name a database, e.g. mongodb://localhost:27017/slotwise."); 
 
             services.AddDbContext<SlotwiseDbContext>(options => options.UseSqlServer(connectionString));
             services.AddSingleton<IMongoClient>(_ => new MongoClient(mongoConnectionString));
+            services.AddSingleton(sp => sp.GetRequiredService<IMongoClient>().GetDatabase(mongoDatabaseName));
             services.AddScoped<IDomainEventDispatcher, DomainEventDispatcher>();
             services.AddScoped<ISessionRepository, SessionRepository>();
             services.AddScoped<ISessionQueries, SessionQueries>();
