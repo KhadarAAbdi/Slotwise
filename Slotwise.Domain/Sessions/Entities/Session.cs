@@ -72,6 +72,10 @@ namespace Slotwise.Domain.Sessions.Entities
 
             if (status == BookingStatus.Confirmed)
                 RaiseEvent(new BookingConfirmed(Id, booking.Id, email.Value));
+            else
+            {
+                RaiseEvent(new BookingWaitlisted(Id, booking.Id, email.Value));
+            }
 
             return booking;
         }

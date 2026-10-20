@@ -106,6 +106,23 @@ public class DomainEventTests
         AssertValueSemantics(promoted, promoted with { }, bookingId);
     }
 
+    [Fact]
+    public void BookingWaitlisted_IsRaisedWhenTheSessionIsFull_AndCarriesSessionBookingAndEmail()
+    {
+        Session session = CreateSession(1);
+        session.Book(new EmailAddress("a@example.com"));
+        Booking booking = session.Book(new EmailAddress("b@example.com"));
+
+        BookingWaitlisted evt = Assert.Single(session.DomainEvents.OfType<BookingWaitlisted>());
+
+
+        Assert.Equal(session.Id, evt.SessionId);
+        Assert.Equal(booking.Id, evt.BookingId);
+        Assert.Equal(booking.EmailAddress.ToString(), evt.AttendeeEmail);
+        AssertRecent(evt.OccurredOn);
+
+    }
+
     private static void AssertValueSemantics(object evt, object copy, Guid idInToString)
     {
         Assert.Equal(evt, copy);
