@@ -4,10 +4,12 @@ using Microsoft.Extensions.DependencyInjection;
 using MongoDB.Driver;
 using Slotwise.Application.Abstractions;
 using Slotwise.Application.Sessions.Interfaces;
+using Slotwise.Domain.Sessions.Events;
 using Slotwise.Infrastructure.Events;
 using Slotwise.Infrastructure.Persistence;
 using Slotwise.Infrastructure.Persistence.Queries;
 using Slotwise.Infrastructure.Persistence.Repositories;
+using Slotwise.Infrastructure.Projections;
 
 namespace Slotwise.Infrastructure
 {
@@ -35,6 +37,18 @@ namespace Slotwise.Infrastructure
             services.AddScoped<IDomainEventDispatcher, DomainEventDispatcher>();
             services.AddScoped<ISessionRepository, SessionRepository>();
             services.AddScoped<ISessionQueries, SessionQueries>();
+
+            // The projection handler reads SQL directly, so the SQL queries class is also registered as itself:
+            // ISessionQueries is about to point at Mongo, and the handler must keep reading the source of truth.
+            services.AddScoped<SessionQueries>();
+
+            // SpotOpened is left out on purpose: it is always raised together with BookingCancelled,
+            // which already refreshes the document.
+            services.AddScoped<IDomainEventHandler<SessionCreated>, SessionProjectionHandler<SessionCreated>>();
+            services.AddScoped<IDomainEventHandler<BookingConfirmed>, SessionProjectionHandler<BookingConfirmed>>();
+            services.AddScoped<IDomainEventHandler<BookingWaitlisted>, SessionProjectionHandler<BookingWaitlisted>>();
+            services.AddScoped<IDomainEventHandler<BookingCancelled>, SessionProjectionHandler<BookingCancelled>>();
+            services.AddScoped<IDomainEventHandler<WaitlistPromoted>, SessionProjectionHandler<WaitlistPromoted>>();
             return services;
         }
     }
