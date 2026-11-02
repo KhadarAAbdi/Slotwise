@@ -11,5 +11,8 @@ namespace Slotwise.Domain.Sessions.Interfaces
     {
         /// <summary>The UTC timestamp at which the event occurred. Needed for ordering and auditing events consistently across every event type.</summary>
         DateTime OccurredOn { get; }
+
+        /// <summary>The session this event happened to. Lets generic code, like the read-model projection, find the session without knowing the event's concrete type.</summary>
+        Guid SessionId { get; }
     }
 }
