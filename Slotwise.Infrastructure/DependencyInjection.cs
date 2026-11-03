@@ -36,7 +36,7 @@ namespace Slotwise.Infrastructure
             services.AddSingleton(sp => sp.GetRequiredService<IMongoClient>().GetDatabase(mongoDatabaseName));
             services.AddScoped<IDomainEventDispatcher, DomainEventDispatcher>();
             services.AddScoped<ISessionRepository, SessionRepository>();
-            services.AddScoped<ISessionQueries, SessionQueries>();
+            services.AddScoped<ISessionQueries, MongoSessionQueries>();
 
             // The projection handler reads SQL directly, so the SQL queries class is also registered as itself:
             // ISessionQueries is about to point at Mongo, and the handler must keep reading the source of truth.
