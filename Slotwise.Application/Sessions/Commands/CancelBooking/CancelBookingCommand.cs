@@ -1,4 +1,4 @@
 namespace Slotwise.Application.Sessions.Commands.CancelBooking
 {
-    public sealed record CancelBookingCommand(Guid SessionId, Guid BookingId);
+    public sealed record class CancelBookingCommand(Guid SessionId, Guid BookingId);
 }

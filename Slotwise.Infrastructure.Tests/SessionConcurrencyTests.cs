@@ -21,7 +21,7 @@ public class SessionConcurrencyTests(SqlServerFixture db)
 
         try
         {
-            var repository = new SessionRepository(context);
+            var repository = new SessionRepository(context, new RecordingDomainEventDispatcher());
             repository.Add(session);
             await repository.SaveChangesAsync();
         }
@@ -40,7 +40,7 @@ public class SessionConcurrencyTests(SqlServerFixture db)
 
         try
         {
-            return await new SessionRepository(context).GetByIdAsync(id);
+            return await new SessionRepository(context, new RecordingDomainEventDispatcher()).GetByIdAsync(id);
         }
         finally
         {
@@ -57,7 +57,7 @@ public class SessionConcurrencyTests(SqlServerFixture db)
 
         try
         {
-            var repository = new SessionRepository(context);
+            var repository = new SessionRepository(context, new RecordingDomainEventDispatcher());
             var loaded = await repository.GetByIdAsync(sessionId);
             loaded!.Book(new EmailAddress(email));
             await repository.SaveChangesAsync();
@@ -93,8 +93,8 @@ public class SessionConcurrencyTests(SqlServerFixture db)
 
         try
         {
-            var repositoryA = new SessionRepository(contextA);
-            var repositoryB = new SessionRepository(contextB);
+            var repositoryA = new SessionRepository(contextA, new RecordingDomainEventDispatcher());
+            var repositoryB = new SessionRepository(contextB, new RecordingDomainEventDispatcher());
 
             var sessionA = await repositoryA.GetByIdAsync(session.Id);
             var sessionB = await repositoryB.GetByIdAsync(session.Id);
@@ -152,7 +152,7 @@ public class SessionConcurrencyTests(SqlServerFixture db)
 
         try
         {
-            var repository = new SessionRepository(context);
+            var repository = new SessionRepository(context, new RecordingDomainEventDispatcher());
             var loaded = await repository.GetByIdAsync(session.Id);
             loaded!.CancelBooking(loaded.Bookings.Single().Id);
             await repository.SaveChangesAsync();
