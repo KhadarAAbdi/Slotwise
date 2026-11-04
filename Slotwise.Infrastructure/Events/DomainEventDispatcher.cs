@@ -31,7 +31,7 @@ namespace Slotwise.Infrastructure.Events
                 // but all we hold is an IDomainEvent, so the handler type has to be built from the runtime type.
                 var eventType = domainEvent.GetType();
                 var handlerType = typeof(IDomainEventHandler<>).MakeGenericType(eventType);
-                var handleMethod = handlerType.GetMethod(nameof(IDomainEventHandler<IDomainEvent>.Handle))!;
+                var handleMethod = handlerType.GetMethod("Handle")!;
 
                 foreach (var handler in _services.GetServices(handlerType))
                 {

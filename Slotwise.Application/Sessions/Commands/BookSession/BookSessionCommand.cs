@@ -1,4 +1,4 @@
 namespace Slotwise.Application.Sessions.Commands.BookSession
 {
-    public sealed record BookSessionCommand(Guid SessionId, string Email);
+    public sealed record class BookSessionCommand(Guid SessionId, string Email);
 }
