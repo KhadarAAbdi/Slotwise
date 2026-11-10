@@ -30,6 +30,10 @@ namespace Slotwise.Infrastructure.Events
                 // Handlers are registered against the concrete event type (IDomainEventHandler<BookingConfirmed>),
                 // but all we hold is an IDomainEvent, so the handler type has to be built from the runtime type.
                 var eventType = domainEvent.GetType();
+
+                // One line per business event, with the session id only: attendee emails are personal data and stay out of the logs.
+                _logger.LogInformation("Domain event {EventType} raised for session {SessionId}.", eventType.Name, domainEvent.SessionId);
+
                 var handlerType = typeof(IDomainEventHandler<>).MakeGenericType(eventType);
                 var handleMethod = handlerType.GetMethod("Handle")!;
 
@@ -41,12 +45,7 @@ namespace Slotwise.Infrastructure.Events
                     }
                     catch (Exception ex)
                     {
-                        // Reflection wraps whatever the handler threw; log the real exception.
-                        var cause = ex is System.Reflection.TargetInvocationException { InnerException: not null } wrapped
-                            ? wrapped.InnerException!
-                            : ex;
-
-                        _logger.LogError(cause, "Handler {Handler} failed for event {EventType}.", handler!.GetType().Name, eventType.Name);
+                        _logger.LogError(ex, "Handler {Handler} failed for event {EventType} on session {SessionId}. The change is saved in SQL, but the read model may be stale.", handler!.GetType().Name, eventType.Name, domainEvent.SessionId);
                     }
                 }
             }

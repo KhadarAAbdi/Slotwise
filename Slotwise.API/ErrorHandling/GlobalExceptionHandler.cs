@@ -11,43 +11,58 @@ namespace Slotwise.API.ErrorHandling
     /// </summary>
     public sealed class GlobalExceptionHandler : IExceptionHandler
     {
+        private readonly ILogger<GlobalExceptionHandler> _logger;
+
+        public GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger)
+        {
+            _logger = logger;
+        }
+
         public async ValueTask<bool> TryHandleAsync(HttpContext httpContext, Exception exception, CancellationToken cancellationToken)
         {
             var (status, title) = Classify(exception);
 
             if (status is null)
             {
-                return false;
+                _logger.LogError(exception, "Unhandled exception");
+                status = StatusCodes.Status500InternalServerError;
+                title = "Something went wrong";
+            }
+            else
+            {
+                _logger.LogWarning("{Title} ({Status}): {Detail}", title, status, exception.Message);
             }
 
             var problem = new ProblemDetails
             {
                 Status = status,
                 Title = title,
-                Detail = exception.Message
+                Detail = status == StatusCodes.Status500InternalServerError ? "An unexpected error occurred" : exception.Message
             };
 
             httpContext.Response.StatusCode = status.Value;
             await httpContext.Response.WriteAsJsonAsync(problem, options: null, contentType: "application/problem+json", cancellationToken);
-
             return true;
         }
 
         private static (int? Status, string Title) Classify(Exception exception)
         {
-            return exception switch
+            switch (exception)
             {
-                SessionNotFoundException => (StatusCodes.Status404NotFound, "Session not found"),
-                SessionConcurrencyException => (StatusCodes.Status409Conflict, "The session was changed by someone else"),
-                ArgumentException or InvalidOperationException when RaisedByDomain(exception) =>
-                    (StatusCodes.Status400BadRequest, "The request breaks a booking rule"),
-                _ => (null, string.Empty)
-            };
+                case SessionNotFoundException:
+                    return (StatusCodes.Status404NotFound, "Session not found");
+
+                case SessionConcurrencyException:
+                    return (StatusCodes.Status409Conflict, "The session was changed by someone else");
+
+                case ArgumentException or InvalidOperationException when RaisedByDomain(exception):
+                    return (StatusCodes.Status400BadRequest, "The request breaks a booking rule");
+
+                default:
+                    return (null, string.Empty);
+            }
         }
 
-        // The domain signals rule violations with ArgumentException and InvalidOperationException. The same
-        // types also come out of the framework when something is genuinely broken, so only those thrown
-        // from the Domain assembly are treated as the caller's mistake.
         private static bool RaisedByDomain(Exception exception)
         {
             return exception.TargetSite?.DeclaringType?.Assembly == typeof(Session).Assembly;
