@@ -1,0 +1,37 @@
+services:
+  api:
+    build: .
+    ports:
+      - "5080:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      # Overrides the values in appsettings.json. "__" stands for ":" in config keys.
+      # "sqlserver" and "mongo" are the service names below: Compose gives each one a DNS name on a shared network.
+      ConnectionStrings__SlotwiseDb: "Server=sqlserver,1433;Database=Slotwise;User Id=sa;Password=Slotwise_Dev_1;TrustServerCertificate=True;"
+      ConnectionStrings__MongoDb: "mongodb://mongo:27017/slotwise"
+    depends_on:
+      - sqlserver
+      - mongo
+
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: "Slotwise_Dev_1"   # local development only
+    ports:
+      # Host port 1434 so it doesn't clash with a SQL Server already running on your machine.
+      - "1434:1433"
+    volumes:
+      - sql-data:/var/opt/mssql
+
+  mongo:
+    image: mongo:9
+    ports:
+      # Host port 27018 so it doesn't clash with your existing slotwise-mongo container on 27017.
+      - "27018:27017"
+    volumes:
+      - mongo-data:/data/db
+
+volumes:
+  sql-data:
+  mongo-data:
