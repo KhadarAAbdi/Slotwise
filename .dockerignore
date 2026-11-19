@@ -1,0 +1,13 @@
+# Keep the build context small and stop local build output or secrets leaking into the image.
+**/bin/
+**/obj/
+.git/
+.vs/
+.github/
+**/node_modules/
+
+# Not needed to build or run the API
+Slotwise.Web/
+*.Tests/
+Dockerfile
+docker-compose.yml
